@@ -86,10 +86,14 @@ def group_dict_data(dict_array):
                     }
                 )
     print(f"Finished grouping data")
-    return sorted(data, key=lambda d: d["total_views"], reverse=True)
+    return data
 
 
-def plot_video_count_plot(grouped_data):
+def sort_data_dict(data_dict, sort_key):
+    return sorted(data_dict, key=lambda d: d[sort_key], reverse=True)
+
+
+def plot_video_count_plot(grouped_data, sort_key):
     print(f"Saving video count plot")
     plt.figure(figsize=(10, 3))
     plt.style.use("ggplot")
@@ -100,10 +104,10 @@ def plot_video_count_plot(grouped_data):
     plt.ylabel("Number of videos")
     plt.title("Number of videos for popular title words in SWU videos")
     plt.xticks(words_pos, words)
-    plt.savefig("num_videos.png")
+    plt.savefig(f"num_videos_sort_key_{sort_key}.png")
 
 
-def plot_view_count_plot(grouped_data):
+def plot_view_count_plot(grouped_data, sort_key):
     print(f"Saving view count plot")
     plt.figure(figsize=(10, 3))
     plt.style.use("ggplot")
@@ -114,15 +118,19 @@ def plot_view_count_plot(grouped_data):
     plt.ylabel("Total view count")
     plt.title("Total view count for popular title words in SWU videos")
     plt.xticks(words_pos, words)
-    plt.savefig("total_views.png")
+    plt.savefig(f"total_views_sort_key_{sort_key}.png")
 
 
 def perform():
     soup = get_soup()
     data = process_page(soup)
     grouped_data = group_dict_data(data)
-    plot_view_count_plot(grouped_data)
-    plot_video_count_plot(grouped_data)
+
+    sort_keys = ["total_views", "num_videos"]
+    for sort_key in sort_keys:
+        sorted_data = sort_data_dict(grouped_data, sort_key)
+        plot_view_count_plot(sorted_data, sort_key)
+        plot_video_count_plot(sorted_data, sort_key)
 
 
 if __name__ == "__main__":
